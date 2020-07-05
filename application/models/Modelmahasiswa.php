@@ -61,4 +61,16 @@ class Modelmahasiswa extends CI_Model
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
+
+    public function simpan($nobp, $nama, $tempat, $tgl, $jenkel)
+    {
+        $simpan = [
+            'nobp' => $nobp,
+            'nama' => $nama,
+            'tmplahir' => $tempat,
+            'tgllahir' => $tgl,
+            'jenkel' => $jenkel
+        ];
+        $this->db->insert('mahasiswa', $simpan);
+    }
 }
