@@ -18,9 +18,14 @@
 <div class="col-lg-12">
     <div class="card m-b-30">
         <h4 class="card-header mt-0">Seluruh Data Mahasiswa</h4>
+        <?= form_open('mahasiswa/deletemultiple', ['class' => 'formhapus']) ?>
         <div class="card-body">
             <button type="button" class="btn btn-primary" id="tomboltambah">
                 <i class="fa fa-plus-circle"></i> Tambah Mahasiswa
+            </button>
+
+            <button type="submit" class="btn btn-sm btn-danger tombolHapusBanyak">
+                <i class="fa fa-trash-o"></i> Hapus Banyak
             </button>
             <p class="card-text">
                 <table class="table table-bordered table-striped display nowrap" style="width:100%;" id="datamahasiswa">
@@ -41,6 +46,7 @@
                 </table>
             </p>
         </div>
+        <?= form_close(); ?>
     </div>
 </div>
 <div class="viewmodal" style="display: none;"></div>
@@ -70,6 +76,14 @@ function tampildatamahasiswa() {
 $(document).ready(function() {
     tampildatamahasiswa();
 
+    $('#centangSemua').click(function(e) {
+        if ($(this).is(':checked')) {
+            $(".centangItem").prop("checked", true);
+        } else {
+            $(".centangItem").prop("checked", false);
+        }
+    });
+
     $('#tomboltambah').click(function(e) {
         $.ajax({
             url: "<?= site_url('mahasiswa/formtambah') ?>",
@@ -84,6 +98,50 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+
+    $('.formhapus').submit(function(e) {
+        e.preventDefault();
+        let jmldata = $('.centangItem:checked')
+
+        if (jmldata.length === 0) {
+            Swal.fire('Perhatian', 'Tidak ada yang dihapus, silahkan dipilih terlebih dahulu',
+                'warning');
+        } else {
+            Swal.fire({
+                title: 'Hapus Data',
+                text: `Ada ${jmldata.length} data mahasiswa yang dihapus, yakin ?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus !',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        type: "post",
+                        url: $(this).attr('action'),
+                        data: $(this).serialize(),
+                        dataType: "json",
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.sukses,
+                                title: 'Berhasil'
+                            });
+                            tampildatamahasiswa();
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(xhr.status + "\n" + xhr.responseText + "\n" +
+                                thrownError);
+                        }
+                    });
+                }
+            })
+
+        }
+        return false;
     });
 });
 
