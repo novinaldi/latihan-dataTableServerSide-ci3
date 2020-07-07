@@ -86,4 +86,58 @@ $(document).ready(function() {
         });
     });
 });
+
+function edit(nobp) {
+    $.ajax({
+        type: 'post',
+        url: "<?= site_url('mahasiswa/formedit') ?>",
+        data: {
+            nobp: nobp
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.sukses) {
+                $('.viewmodal').html(response.sukses).show();
+                $('#modaledit').on('shown.bs.modal', function(e) {
+                    $('#nama').focus();
+                })
+                $('#modaledit').modal('show');
+            }
+        }
+    });
+}
+
+function hapus(nobp) {
+    Swal.fire({
+        title: 'Hapus',
+        text: `Yakin menghapus mahasiswa dengan nobp =${nobp} ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Tidak'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                type: "post",
+                url: "<?= site_url('mahasiswa/hapus') ?>",
+                data: {
+                    nobp: nobp,
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response.sukses) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Konfirmasi',
+                            text: response.sukses
+                        });
+                        tampildatamahasiswa();
+                    }
+                }
+            });
+        }
+    })
+}
 </script>

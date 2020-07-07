@@ -73,4 +73,25 @@ class Modelmahasiswa extends CI_Model
         ];
         $this->db->insert('mahasiswa', $simpan);
     }
+    public function ambildata($nobp)
+    {
+        return $this->db->get_where('mahasiswa', ['nobp' => $nobp]);
+    }
+
+    public function update($nobp, $nama, $tempat, $tgl, $jenkel)
+    {
+        $simpan = [
+            'nama' => $nama,
+            'tmplahir' => $tempat,
+            'tgllahir' => $tgl,
+            'jenkel' => $jenkel
+        ];
+        $this->db->where('nobp', $nobp);
+        $this->db->update('mahasiswa', $simpan);
+    }
+
+    public function hapus($nobp)
+    {
+        return $this->db->delete('mahasiswa', ['nobp' => $nobp]);
+    }
 }

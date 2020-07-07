@@ -29,13 +29,21 @@ class Mahasiswa extends CI_Controller
                 $no++;
                 $row = array();
 
+                // Membuat Tombol
+                $tomboledit = "<button type=\"button\" class=\"btn btn-outline-info\" title=\"Edit Data\" onclick=\"edit('" . $field->nobp . "')\">
+                    <i class=\"fa fa-tags\"></i>
+                </button>";
+                $tombolhapus = "<button type=\"button\" class=\"btn btn-outline-danger\" title=\"Hapus Data\" onclick=\"hapus('" . $field->nobp . "')\">
+                    <i class=\"fa fa-trash\"></i>
+                </button>";
+
                 $row[] = $no;
                 $row[] = $field->nobp;
                 $row[] = $field->nama;
                 $row[] = $field->tmplahir;
                 $row[] = $field->tgllahir;
                 $row[] = $field->jenkel;
-                $row[] = "";
+                $row[] = $tomboledit . ' ' . $tombolhapus;
                 $data[] = $row;
             }
 
@@ -108,6 +116,67 @@ class Mahasiswa extends CI_Controller
                 ];
             }
 
+            echo json_encode($msg);
+        }
+    }
+
+    public function formedit()
+    {
+        if ($this->input->is_ajax_request() == true) {
+            $nobp = $this->input->post('nobp', true);
+
+            $ambildata = $this->mahasiswa->ambildata($nobp);
+
+            if ($ambildata->num_rows() > 0) {
+                $row = $ambildata->row_array();
+                $data = [
+                    'nobp' => $nobp,
+                    'nama' => $row['nama'],
+                    'tempat' => $row['tmplahir'],
+                    'tgl' => $row['tgllahir'],
+                    'jenkel' => $row['jenkel']
+                ];
+            }
+            $msg = [
+                'sukses' => $this->load->view('mahasiswa/modaledit', $data, true)
+            ];
+
+            echo json_encode($msg);
+        }
+    }
+
+    public function updatedata()
+    {
+        if ($this->input->is_ajax_request() == true) {
+            $nobp = $this->input->post('nobp', true);
+            $nama = $this->input->post('nama', true);
+            $tempat = $this->input->post('tempat', true);
+            $tgl = $this->input->post('tgl', true);
+            $jenkel = $this->input->post('jenkel', true);
+
+
+
+            $this->mahasiswa->update($nobp, $nama, $tempat, $tgl, $jenkel);
+
+            $msg = [
+                'sukses' => 'data mahasiswa berhasil di-update'
+            ];
+            echo json_encode($msg);
+        }
+    }
+
+    public function hapus()
+    {
+        if ($this->input->is_ajax_request() == true) {
+            $nobp = $this->input->post('nobp', true);
+
+            $hapus = $this->mahasiswa->hapus($nobp);
+
+            if ($hapus) {
+                $msg = [
+                    'sukses' => 'Mahasiswa berhasil terhapus'
+                ];
+            }
             echo json_encode($msg);
         }
     }
