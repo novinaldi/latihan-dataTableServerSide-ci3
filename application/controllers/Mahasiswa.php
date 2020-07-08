@@ -37,6 +37,7 @@ class Mahasiswa extends CI_Controller
                     <i class=\"fa fa-trash\"></i>
                 </button>";
 
+                $row[] = "<input type=\"checkbox\" class=\"centangNobp\" value=\"$field->nobp\" name=\"nobp[]\">";
                 $row[] = $no;
                 $row[] = $field->nobp;
                 $row[] = $field->nama;
@@ -178,6 +179,26 @@ class Mahasiswa extends CI_Controller
                 ];
             }
             echo json_encode($msg);
+        }
+    }
+
+    public function deletemultiple()
+    {
+        if ($this->input->is_ajax_request() == true) {
+
+            $nobp = $this->input->post('nobp', true);
+            $jmldata = count($nobp);
+
+            $hapusdata = $this->mahasiswa->hapusbanyak($nobp, $jmldata);
+
+            if ($hapusdata == true) {
+                $msg = [
+                    'sukses' => "$jmldata data mahasiswa berhasil terhapus"
+                ];
+            }
+            echo json_encode($msg);
+        } else {
+            exit('Maaf tidak bisa dilanjutkan');
         }
     }
 }

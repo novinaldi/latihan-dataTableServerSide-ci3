@@ -94,4 +94,13 @@ class Modelmahasiswa extends CI_Model
     {
         return $this->db->delete('mahasiswa', ['nobp' => $nobp]);
     }
+
+    public function hapusbanyak($nobp, $jmldata)
+    {
+        for ($i = 0; $i < $jmldata; $i++) {
+            $this->db->delete('mahasiswa', ['nobp' => $nobp[$i]]);
+        }
+
+        return true;
+    }
 }

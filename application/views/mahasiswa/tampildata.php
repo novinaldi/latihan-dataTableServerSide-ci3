@@ -27,10 +27,14 @@
             <button type="submit" class="btn btn-sm btn-danger tombolHapusBanyak">
                 <i class="fa fa-trash-o"></i> Hapus Banyak
             </button>
+
             <p class="card-text">
                 <table class="table table-bordered table-striped display nowrap" style="width:100%;" id="datamahasiswa">
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="centangSemua">
+                            </th>
                             <th>No</th>
                             <th>NOBP</th>
                             <th>Nama Mahasiswa</th>
@@ -74,6 +78,15 @@ function tampildatamahasiswa() {
     });
 }
 $(document).ready(function() {
+
+    $('#centangSemua').click(function(e) {
+        if ($(this).is(":checked")) {
+            $('.centangNobp').prop('checked', true);
+        } else {
+            $('.centangNobp').prop('checked', false);
+        }
+    });
+
     tampildatamahasiswa();
 
     $('#centangSemua').click(function(e) {
@@ -102,20 +115,24 @@ $(document).ready(function() {
 
     $('.formhapus').submit(function(e) {
         e.preventDefault();
-        let jmldata = $('.centangItem:checked')
+
+        let jmldata = $('.centangNobp:checked');
 
         if (jmldata.length === 0) {
-            Swal.fire('Perhatian', 'Tidak ada yang dihapus, silahkan dipilih terlebih dahulu',
-                'warning');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Maaf tidak ada yang bisa dihapus, silahkan dicentang !'
+            })
         } else {
             Swal.fire({
                 title: 'Hapus Data',
-                text: `Ada ${jmldata.length} data mahasiswa yang dihapus, yakin ?`,
+                text: `Ada ${jmldata.length} data mahasiswa yang akan dihapus, yakin ?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus !',
+                confirmButtonText: 'Ya, Hapus',
                 cancelButtonText: 'Tidak'
             }).then((result) => {
                 if (result.value) {
@@ -125,12 +142,14 @@ $(document).ready(function() {
                         data: $(this).serialize(),
                         dataType: "json",
                         success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                text: response.sukses,
-                                title: 'Berhasil'
-                            });
-                            tampildatamahasiswa();
+                            if (response.sukses) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.sukses
+                                })
+                                tampildatamahasiswa();
+                            }
                         },
                         error: function(xhr, ajaxOptions, thrownError) {
                             alert(xhr.status + "\n" + xhr.responseText + "\n" +
@@ -139,7 +158,6 @@ $(document).ready(function() {
                     });
                 }
             })
-
         }
         return false;
     });
